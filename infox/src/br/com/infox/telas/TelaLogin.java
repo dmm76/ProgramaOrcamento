@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.JInternalFrame;
 import com.jgoodies.forms.layout.FormLayout;
@@ -23,6 +24,8 @@ import javax.swing.Box;
 import java.sql.*;
 import br.com.infox.dal.ModuloConexao;
 import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TelaLogin extends JFrame {
 
@@ -30,9 +33,40 @@ public class TelaLogin extends JFrame {
 	PreparedStatement pst = null;
 	ResultSet rs = null;
 
+	public void logar() {
+		String sql = "select * from tbusuarios where login=? and senha=?";
+		try {
+			// as linhas abaixo preparam a consulta ao banco em funcao do que foi digitado
+			// no fields
+			pst = conexao.prepareStatement(sql);
+			pst.setString(1, txtUsuario.getText());
+			pst.setString(2, pswSenha.getText());
+			// a linha abaixo executa a query/consulta/select
+			rs = pst.executeQuery();
+
+			// se existir usuario e senha correspondente
+			if (rs.next()) {
+				TelaPrincipal principal = new TelaPrincipal();
+				principal.setVisible(true);
+				dispose();
+
+			} else {				
+			    JOptionPane.showMessageDialog(this, "Usuário e/ou Senha inválido", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+				
+			}
+			
+			// Limpar os campos após a tentativa de login
+	        txtUsuario.setText("");
+	        pswSenha.setText("");
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
-	private JTextField txtField;
-	private JPasswordField pswField;
+	private JTextField txtUsuario;
+	private JPasswordField pswSenha;
 
 	/**
 	 * Launch the application.
@@ -60,6 +94,19 @@ public class TelaLogin extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 297, 192);
 		getContentPane().setLayout(null);
+		
+		 // Centralizar a janela
+	    setLocationRelativeTo(null);
+		
+				JButton btnLogin = new JButton("Login");
+				btnLogin.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						//chamando o metodo logar
+						logar();
+					}
+				});
+				btnLogin.setBounds(159, 115, 98, 20);
+				getContentPane().add(btnLogin);
 
 		JLabel lblUsuario = new JLabel("Usuário:");
 		lblUsuario.setBounds(12, 26, 55, 16);
@@ -69,37 +116,33 @@ public class TelaLogin extends JFrame {
 		lblSenha.setBounds(12, 71, 55, 16);
 		getContentPane().add(lblSenha);
 
-		txtField = new JTextField();
-		txtField.setBounds(85, 24, 172, 20);
-		getContentPane().add(txtField);
-		txtField.setColumns(10);
+		txtUsuario = new JTextField();
+		txtUsuario.setBounds(85, 24, 172, 20);
+		getContentPane().add(txtUsuario);
+		txtUsuario.setColumns(10);
 
-		pswField = new JPasswordField();
-		pswField.setBounds(85, 69, 172, 20);
-		getContentPane().add(pswField);
+		pswSenha = new JPasswordField();
+		pswSenha.setBounds(85, 69, 172, 20);
+		getContentPane().add(pswSenha);
 
-		JButton btnLogin = new JButton("Login");
-		btnLogin.setBounds(159, 115, 98, 20);
-		getContentPane().add(btnLogin);
-		
 		JLabel lblStatus = new JLabel("");
 		lblStatus.setIcon(new ImageIcon("C:\\Users\\Extreme\\Pictures\\DBImagens\\dbstage.png"));
 		lblStatus.setBounds(22, 99, 34, 44);
 		getContentPane().add(lblStatus);
-		
+
 		JLabel lblStatus2 = new JLabel("");
 		lblStatus2.setIcon(new ImageIcon("C:\\Users\\Extreme\\Pictures\\DBImagens\\dberror.png"));
 		lblStatus2.setBounds(22, 99, 34, 46);
 		getContentPane().add(lblStatus2);
 
 		conexao = ModuloConexao.conector();
-		//a linha abaixo serve de apoio ao status da conexao
-		//System.out.println(conexao);
-		if(conexao!=null) {
+		// a linha abaixo serve de apoio ao status da conexao
+		// System.out.println(conexao);
+		if (conexao != null) {
 			lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/dbstage.png")));
-		}else {
+		} else {
 			lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/dberror.png")));
 		}
-		
+
 	}
 }

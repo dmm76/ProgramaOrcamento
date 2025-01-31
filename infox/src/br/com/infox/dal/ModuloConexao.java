@@ -6,9 +6,9 @@ public class ModuloConexao {
 
 	// metodo responsavel por estabelecer a conexao com o banco
 	public static Connection conector() {
-		java.sql.Connection conexao = null;
+		Connection conexao = null;
 		// a linha abaixo "chama" o driver que eu importei para bibliotecas
-		String driver = "com.mysql.jdbc.Driver";
+		String driver = "com.mysql.cj.jdbc.Driver";
 		// Armazenando informaçoes referente ao banco
 		String url = "jdbc:mysql://localhost:3306/dbinfox";
 		String user = "root";
