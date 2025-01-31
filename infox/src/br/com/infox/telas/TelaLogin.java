@@ -58,8 +58,8 @@ public class TelaLogin extends JFrame {
 					// alinha abaixo exibe o conteudo do campo da tabela
 					TelaPrincipal principal = new TelaPrincipal();
 					principal.setVisible(true);
-					TelaPrincipal.MenRelatorio.setEnabled(true);
-					TelaPrincipal.MenCadUsuarios.setEnabled(true);
+					TelaPrincipal.menRelatorio.setEnabled(true);
+					TelaPrincipal.menCadUsuarios.setEnabled(true);
 					TelaPrincipal.lblUsuario.setText("<html>Seja bem-vindo(a)!<br>" + rs.getString(2) + "</html>");
 					// fecha a tela de login e a conexao ao bd
 					conexao.close();

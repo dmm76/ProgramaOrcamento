@@ -31,9 +31,12 @@ public class TelaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	//private JLabel lblData;
-	public static JMenuItem MenCadUsuarios; // Agora pode ser acessado por outras classes
-	public static JMenu MenRelatorio;
+	private JDesktopPane desktopPanel;
+	
+	public static JMenuItem menCadUsuarios; // Agora pode ser acessado por outras classes
+	public static JMenu menRelatorio;
 	public static JLabel lblUsuario;
+	
 	
 	/**
 	 * Launch the application.
@@ -68,47 +71,59 @@ public class TelaPrincipal extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		JMenu MenCadastro = new JMenu("Cadastro");
-		menuBar.add(MenCadastro);
+		JMenu menCadastro = new JMenu("Cadastro");
+		menuBar.add(menCadastro);
 		
-		JMenuItem MenCadCli = new JMenuItem("Clientes");
-		MenCadCli.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
-		MenCadastro.add(MenCadCli);
+		JMenuItem menCadCli = new JMenuItem("Clientes");
+		menCadCli.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
+		menCadastro.add(menCadCli);
 		
-		JMenuItem MenCadOs = new JMenuItem("Os");
-		MenCadOs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
-		MenCadastro.add(MenCadOs);
+		JMenuItem menCadOs = new JMenuItem("Os");
+		menCadOs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
+		menCadastro.add(menCadOs);
 		
-		MenCadUsuarios = new JMenuItem("Usuários");
-		MenCadUsuarios.setEnabled(false);
-		MenCadUsuarios.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_DOWN_MASK));
-		MenCadastro.add(MenCadUsuarios);
+		menCadUsuarios = new JMenuItem("Usuários");
+		menCadUsuarios.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//as linha abaixo abrem o form TelaUsuario dentro do desktopPane
+				TelaUsuario usuario = new TelaUsuario(desktopPanel);
+				desktopPanel.add(usuario);
+				usuario.setVisible(true);
+				
+			}
+		});
+		menCadUsuarios.setEnabled(false);
+		menCadUsuarios.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_DOWN_MASK));
+		menCadastro.add(menCadUsuarios);
 		
-		MenRelatorio = new JMenu("Relatório");
-		MenRelatorio.setEnabled(false);
-		menuBar.add(MenRelatorio);
+		menRelatorio = new JMenu("Relatório");
+		menRelatorio.setEnabled(false);
+		menuBar.add(menRelatorio);
 		
-		JMenuItem MenRelatorioServicos = new JMenuItem("Serviços");
-		MenRelatorio.add(MenRelatorioServicos);		
+		JMenuItem menRelatorioServicos = new JMenuItem("Serviços");
+		menRelatorioServicos.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		menRelatorio.add(menRelatorioServicos);		
 		
-		JMenu MenAjuda = new JMenu("Ajuda");
-		menuBar.add(MenAjuda);
+		JMenu menAjuda = new JMenu("Ajuda");
+		menuBar.add(menAjuda);
 		
-		JMenuItem MenAjudaSobre = new JMenuItem("Sobre");
-		MenAjudaSobre.addActionListener(new ActionListener() {
+		JMenuItem menAjudaSobre = new JMenuItem("Sobre");
+		menAjudaSobre.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		menAjudaSobre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//chamando a tela sobre
 				TelaSobre sobre = new TelaSobre();
 				sobre.setVisible(true);
 			}
 		});
-		MenAjuda.add(MenAjudaSobre);
+		menAjuda.add(menAjudaSobre);
 		
-		JMenu MenOpcoes = new JMenu("Opções");
-		menuBar.add(MenOpcoes);
+		JMenu menOpcoes = new JMenu("Opções");
+		menuBar.add(menOpcoes);
 		
-		JMenuItem MenOpcoesSair = new JMenuItem("Sair");
-		MenOpcoesSair.addActionListener(new ActionListener() {
+		JMenuItem menOpcoesSair = new JMenuItem("Sair");
+		menOpcoesSair.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		menOpcoesSair.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//exibe uma caixa de dialogo
 				int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
@@ -117,11 +132,11 @@ public class TelaPrincipal extends JFrame {
 				}
 			}
 		});
-		MenOpcoes.add(MenOpcoesSair);
+		menOpcoes.add(menOpcoesSair);
 		
 		getContentPane().setLayout(null);
 		
-		JDesktopPane desktopPanel = new JDesktopPane();
+		desktopPanel = new JDesktopPane();
 		desktopPanel.setBounds(10, 11, 482, 518);
 		getContentPane().add(desktopPanel);
 		
