@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
@@ -23,12 +24,17 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.util.Date;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TelaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel lblData;
-
+	//private JLabel lblData;
+	public static JMenuItem MenCadUsuarios; // Agora pode ser acessado por outras classes
+	public static JMenu MenRelatorio;
+	public static JLabel lblUsuario;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -73,11 +79,13 @@ public class TelaPrincipal extends JFrame {
 		MenCadOs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
 		MenCadastro.add(MenCadOs);
 		
-		JMenuItem MenCadUsuarios = new JMenuItem("Usuários");
+		MenCadUsuarios = new JMenuItem("Usuários");
+		MenCadUsuarios.setEnabled(false);
 		MenCadUsuarios.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_DOWN_MASK));
 		MenCadastro.add(MenCadUsuarios);
 		
-		JMenu MenRelatorio = new JMenu("Relatório");
+		MenRelatorio = new JMenu("Relatório");
+		MenRelatorio.setEnabled(false);
 		menuBar.add(MenRelatorio);
 		
 		JMenuItem MenRelatorioServicos = new JMenuItem("Serviços");
@@ -87,12 +95,28 @@ public class TelaPrincipal extends JFrame {
 		menuBar.add(MenAjuda);
 		
 		JMenuItem MenAjudaSobre = new JMenuItem("Sobre");
+		MenAjudaSobre.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//chamando a tela sobre
+				TelaSobre sobre = new TelaSobre();
+				sobre.setVisible(true);
+			}
+		});
 		MenAjuda.add(MenAjudaSobre);
 		
 		JMenu MenOpcoes = new JMenu("Opções");
 		menuBar.add(MenOpcoes);
 		
 		JMenuItem MenOpcoesSair = new JMenuItem("Sair");
+		MenOpcoesSair.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//exibe uma caixa de dialogo
+				int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
+				if(sair == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
+			}
+		});
 		MenOpcoes.add(MenOpcoesSair);
 		
 		getContentPane().setLayout(null);
@@ -106,8 +130,8 @@ public class TelaPrincipal extends JFrame {
 		getContentPane().add(lblLogo);
 		lblLogo.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/br/com/infox/icones/logoX.png")));
 		
-		JLabel lblUsuario = new JLabel("Usuário");
-		lblUsuario.setBounds(502, 37, 272, 22);
+		lblUsuario = new JLabel("Usuário");
+		lblUsuario.setBounds(510, 36, 272, 45);
 		getContentPane().add(lblUsuario);
 		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
 		

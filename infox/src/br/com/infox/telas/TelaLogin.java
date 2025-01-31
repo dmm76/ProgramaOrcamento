@@ -40,7 +40,7 @@ public class TelaLogin extends JFrame {
 			// no fields
 			pst = conexao.prepareStatement(sql);
 			pst.setString(1, txtUsuario.getText());
-			//aumentando a seguranca recuperando um digito por vez na senha
+			// aumentando a seguranca recuperando um digito por vez na senha
 			String captura = new String(pswSenha.getPassword());
 			pst.setString(2, captura);
 			// a linha abaixo executa a query/consulta/select
@@ -48,11 +48,29 @@ public class TelaLogin extends JFrame {
 
 			// se existir usuario e senha correspondente
 			if (rs.next()) {
-				TelaPrincipal principal = new TelaPrincipal();
-				principal.setVisible(true);
-				//fecha a tela de login e a conexao ao bd
-				conexao.close();
-				this.dispose();
+
+				// alinha abaixo obtem o conteudo do campo perfil da tbusuario do banco
+				String perfil = rs.getString(6);
+				// System.out.println(perfil);
+
+				// a estrutura abaixo faz o tratamento do pefil do usuario
+				if (perfil.equals("admin")) {
+					// alinha abaixo exibe o conteudo do campo da tabela
+					TelaPrincipal principal = new TelaPrincipal();
+					principal.setVisible(true);
+					TelaPrincipal.MenRelatorio.setEnabled(true);
+					TelaPrincipal.MenCadUsuarios.setEnabled(true);
+					TelaPrincipal.lblUsuario.setText("<html>Seja bem-vindo(a)!<br>" + rs.getString(2) + "</html>");
+					// fecha a tela de login e a conexao ao bd
+					conexao.close();
+					this.dispose();
+				}else {
+					TelaPrincipal principal = new TelaPrincipal();
+					principal.setVisible(true);
+					TelaPrincipal.lblUsuario.setText("<html>Seja bem-vindo(a)!<br>" + rs.getString(2) + "</html>");
+					conexao.close();
+					this.dispose();
+				}
 			} else {
 				JOptionPane.showMessageDialog(this, "Usuário e/ou Senha inválido(s)", "Erro de Login",
 						JOptionPane.ERROR_MESSAGE);
@@ -93,7 +111,7 @@ public class TelaLogin extends JFrame {
 		setAlwaysOnTop(true);
 		setResizable(false);
 		setTitle("X System - Login");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 297, 192);
 		getContentPane().setLayout(null);
 
