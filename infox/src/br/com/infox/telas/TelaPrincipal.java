@@ -19,10 +19,15 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.util.Date;
 
 public class TelaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private JLabel lblData;
 
 	/**
 	 * Launch the application.
@@ -44,6 +49,7 @@ public class TelaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaPrincipal() {
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setTitle("X - Sistema de Controle de Cadastro");
@@ -91,30 +97,35 @@ public class TelaPrincipal extends JFrame {
 		
 		getContentPane().setLayout(null);
 		
-		JPanel painelPrincipal = new JPanel();
-		painelPrincipal.setLayout(null); // Mantendo a flexibilidade
-		painelPrincipal.setBounds(0, 0, 784, 600);
-		getContentPane().add(painelPrincipal);
-		
-		// Criando o DesktopPane dentro do painel
 		JDesktopPane desktopPanel = new JDesktopPane();
-		desktopPanel.setBounds(10, 10, 482, 504); // Espaço ajustável para componentes extras
-		painelPrincipal.add(desktopPanel);
-		
-		JLabel lblUsuario = new JLabel("Usuário");
-		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblUsuario.setBounds(502, 52, 74, 22);
-		painelPrincipal.add(lblUsuario);
-		
-		JLabel lblData = new JLabel("Data");
-		lblData.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblData.setBounds(502, 137, 60, 35);
-		painelPrincipal.add(lblData);
+		desktopPanel.setBounds(10, 11, 482, 518);
+		getContentPane().add(desktopPanel);
 		
 		JLabel lblLogo = new JLabel("");
+		lblLogo.setBounds(493, 329, 281, 186);
+		getContentPane().add(lblLogo);
 		lblLogo.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/br/com/infox/icones/logoX.png")));
-		lblLogo.setBounds(495, 316, 281, 186);
-		painelPrincipal.add(lblLogo);
+		
+		JLabel lblUsuario = new JLabel("Usuário");
+		lblUsuario.setBounds(502, 37, 272, 22);
+		getContentPane().add(lblUsuario);
+		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
+		JLabel lblData = new JLabel("Data");
+		lblData.setBounds(542, 283, 209, 35);
+		getContentPane().add(lblData);
+		lblData.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
+		//as linhas abaixo substituem a lbldata pela data atual do sistema
+		//ao inicializar o form
+		addWindowListener(new WindowAdapter() {
+		@Override
+		public void windowActivated(WindowEvent e) {
+			Date data = new Date();
+			DateFormat formatador = DateFormat.getDateInstance(DateFormat.MEDIUM);
+			lblData.setText(formatador.format(data));
+			}
+		});
 		
 	}
 }
