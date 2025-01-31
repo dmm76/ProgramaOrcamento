@@ -40,7 +40,9 @@ public class TelaLogin extends JFrame {
 			// no fields
 			pst = conexao.prepareStatement(sql);
 			pst.setString(1, txtUsuario.getText());
-			pst.setString(2, pswSenha.getText());
+			//aumentando a seguranca recuperando um digito por vez na senha
+			String captura = new String(pswSenha.getPassword());
+			pst.setString(2, captura);
 			// a linha abaixo executa a query/consulta/select
 			rs = pst.executeQuery();
 
@@ -48,19 +50,19 @@ public class TelaLogin extends JFrame {
 			if (rs.next()) {
 				TelaPrincipal principal = new TelaPrincipal();
 				principal.setVisible(true);
-				dispose();
-
-			} else {				
-			    JOptionPane.showMessageDialog(this, "Usuário e/ou Senha inválido", "Erro de Login", JOptionPane.ERROR_MESSAGE);
-				
+				//fecha a tela de login e a conexao ao bd
+				conexao.close();
+				this.dispose();
+			} else {
+				JOptionPane.showMessageDialog(this, "Usuário e/ou Senha inválido(s)", "Erro de Login",
+						JOptionPane.ERROR_MESSAGE);
 			}
-			
 			// Limpar os campos após a tentativa de login
-	        txtUsuario.setText("");
-	        pswSenha.setText("");
+			txtUsuario.setText("");
+			pswSenha.setText("");
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e);
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -94,19 +96,19 @@ public class TelaLogin extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 297, 192);
 		getContentPane().setLayout(null);
-		
-		 // Centralizar a janela
-	    setLocationRelativeTo(null);
-		
-				JButton btnLogin = new JButton("Login");
-				btnLogin.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						//chamando o metodo logar
-						logar();
-					}
-				});
-				btnLogin.setBounds(159, 115, 98, 20);
-				getContentPane().add(btnLogin);
+
+		// Centralizar a janela
+		setLocationRelativeTo(null);
+
+		JButton btnLogin = new JButton("Login");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// chamando o metodo logar
+				logar();
+			}
+		});
+		btnLogin.setBounds(159, 115, 98, 20);
+		getContentPane().add(btnLogin);
 
 		JLabel lblUsuario = new JLabel("Usuário:");
 		lblUsuario.setBounds(12, 26, 55, 16);
