@@ -163,6 +163,9 @@ public class TelaLogin extends JFrame {
 		} else {
 			lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/dberror.png")));
 		}
+		
+		// Configurando o botão Login como padrão para o Enter
+	    getRootPane().setDefaultButton(btnLogin);
 
 	}
 }

@@ -126,12 +126,24 @@ public class TelaUsuario extends JInternalFrame {
 		getContentPane().add(btnUserFind);
 
 		JButton btnUserUpdate = new JButton("");
+		btnUserUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// chamando o metodo alterar
+				alterar();
+			}
+		});
 		btnUserUpdate.setToolTipText("Editar");
 		btnUserUpdate.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/edit.png")));
 		btnUserUpdate.setBounds(246, 393, 89, 52);
 		getContentPane().add(btnUserUpdate);
 
 		JButton btnUserDelete = new JButton("");
+		btnUserDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// chamando o metodo remover usuario
+				remover();
+			}
+		});
 		btnUserDelete.setToolTipText("Remover");
 		btnUserDelete.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/remove.png")));
 		btnUserDelete.setBounds(367, 393, 89, 52);
@@ -156,7 +168,7 @@ public class TelaUsuario extends JInternalFrame {
 		txtUserPhone.setText("");
 		txtUserLogin.setText("");
 		txtUserPassword.setText("");
-		//cbxPerfil.setSelectedIndex(-1);
+		// cbxPerfil.setSelectedIndex(-1);
 	}
 
 	private void consultar() {
@@ -196,7 +208,8 @@ public class TelaUsuario extends JInternalFrame {
 			pst.setString(6, cbxPerfil.getSelectedItem().toString());
 			System.out.println(cbxPerfil.getSelectedItem().toString());
 			// Validacao dos campos obrigatorios
-			if ((txtUserId.getText().isEmpty()) || (txtUserName.getText().isEmpty()) || (txtUserLogin.getText().isEmpty()) || (txtUserPassword.getText().isEmpty())) {
+			if ((txtUserId.getText().isEmpty()) || (txtUserName.getText().isEmpty())
+					|| (txtUserLogin.getText().isEmpty()) || (txtUserPassword.getText().isEmpty())) {
 				JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
 				limparTela();
 			} else {
@@ -206,7 +219,7 @@ public class TelaUsuario extends JInternalFrame {
 				// modificado para ao executar exibir uma mensagem caso tudo ocorreu bem
 				int adicionado = pst.executeUpdate();
 				// maior que zero pq ao adicionar uma (1) linha o programa retorna 1
-				System.out.println(adicionado);
+				// System.out.println(adicionado);
 				if (adicionado > 0) {
 					JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso!");
 					txtUserId.setText("");
@@ -215,6 +228,66 @@ public class TelaUsuario extends JInternalFrame {
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e);
+		}
+	}
+
+	private void alterar() {
+		String sql = "update tbusuarios set usuario=?, fone=?, login=?, senha=?, perfil=? where iduser=?";
+		try {
+			// preparar a conexao
+			pst = conexao.prepareStatement(sql);
+			pst.setString(1, txtUserName.getText());
+			pst.setString(2, txtUserPhone.getText());
+			pst.setString(3, txtUserLogin.getText());
+			pst.setString(4, txtUserPassword.getText());
+			pst.setString(5, cbxPerfil.getSelectedItem().toString());
+			pst.setString(6, txtUserId.getText());
+			if ((txtUserId.getText().isEmpty()) || (txtUserName.getText().isEmpty())
+					|| (txtUserLogin.getText().isEmpty()) || (txtUserPassword.getText().isEmpty())) {
+				JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+				limparTela();
+			} else {
+				// a linha abaixo alterar a tabela de usuario com os dados do formulario
+				// Altera a tabela com os dados do formulário
+				// pst.executeUpdate();
+				// modificado para ao executar exibir uma mensagem caso tudo ocorreu bem
+				int adicionado = pst.executeUpdate();
+				// maior que zero pq ao adicionar uma (1) linha o programa retorna 1
+				// System.out.println(adicionado);
+				if (adicionado > 0) {
+					JOptionPane.showMessageDialog(null, "Dados do usuário alterado com sucesso!");
+					txtUserId.setText("");
+					limparTela();
+				}
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
+
+	private void remover() {
+		// antes de remover necessario fazer a confirmacao da remocao
+		int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuários", "Atenção",
+				JOptionPane.YES_NO_OPTION);
+
+		if (confirma == JOptionPane.YES_OPTION) {
+			String sql = "delete from tbusuarios where iduser=?";
+			try {
+				pst = conexao.prepareStatement(sql);
+				pst.setString(1, txtUserId.getText());
+
+				// maior que zero pq ao adicionar uma (1) linha o programa retorna 1
+				int apagado = pst.executeUpdate();
+				// System.out.println(apagado);
+				if (apagado > 0) {
+					JOptionPane.showMessageDialog(null, "Usuário removido com sucesso!");
+					txtUserId.setText("");
+					limparTela();
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e);
+			}
 		}
 	}
 }

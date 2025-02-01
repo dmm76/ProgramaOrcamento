@@ -33,8 +33,11 @@ public class TelaPrincipal extends JFrame {
 	//private JLabel lblData;
 	private JDesktopPane desktopPanel;
 	
-	public static JMenuItem menCadUsuarios; // Agora pode ser acessado por outras classes
+	public static JMenuItem menCadUsuarios; // Agora pode ser acessado por outras classes	
 	public static JMenu menRelatorio;
+	
+	public static JMenuItem menCadCli; //Agora pode ser acessado por outras classes
+		
 	public static JLabel lblUsuario;
 	
 	
@@ -74,7 +77,14 @@ public class TelaPrincipal extends JFrame {
 		JMenu menCadastro = new JMenu("Cadastro");
 		menuBar.add(menCadastro);
 		
-		JMenuItem menCadCli = new JMenuItem("Clientes");
+		menCadCli = new JMenuItem("Clientes");
+		menCadCli.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaCliente cliente = new TelaCliente(desktopPanel);
+				desktopPanel.add(cliente);
+				cliente.setVisible(true);
+			}
+		});
 		menCadCli.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
 		menCadastro.add(menCadCli);
 		
