@@ -89,6 +89,14 @@ public class TelaPrincipal extends JFrame {
 		menCadastro.add(menCadCli);
 		
 		JMenuItem menCadOs = new JMenuItem("Os");
+		menCadOs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//chamando a telaOs
+				TelaOs os = new TelaOs();
+				os.setVisible(true);
+				desktopPanel.add(os);
+			}
+		});
 		menCadOs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
 		menCadastro.add(menCadOs);
 		

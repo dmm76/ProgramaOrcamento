@@ -189,10 +189,12 @@ public class TelaCliente extends JInternalFrame {
 	}
 
 	private void limparTela() {
+		textCliPesquisar.setText(null);
 		txtCliName.setText("");
 		txtCliEndereco.setText("");
 		txtCliFone.setText("");
 		txtCliEmail.setText("");
+		((DefaultTableModel) tblClientes.getModel()).setRowCount(0);
 	}
 
 	private void adicionar() {
@@ -330,7 +332,6 @@ public class TelaCliente extends JInternalFrame {
 			if (alterado > 0) {
 				JOptionPane.showMessageDialog(null, "Dados do usuário alterado com sucesso!");
 				limparTela();
-				pesquisar();
 				btnCliAdicionar.setEnabled(true);
 			}
 		} catch (Exception e) {
@@ -351,7 +352,7 @@ public class TelaCliente extends JInternalFrame {
 	        }
 			// Recupera o ID do cliente da linha selecionada (supondo que o ID esteja na coluna 0)
 	        String idCliente = tblClientes.getModel().getValueAt(linhaSelecionada, 0).toString();
-	        //System.out.println(idCliente);
+	        System.out.println(idCliente);
 			String sql = "delete from tbclientes where idcli=?";
 			try {
 				pst = conexao.prepareStatement(sql);
@@ -360,7 +361,7 @@ public class TelaCliente extends JInternalFrame {
 				if (apagado > 0) {					
 					JOptionPane.showMessageDialog(null, "Cliente removido com sucesso!");					
 					limparTela();
-					pesquisar();
+					btnCliAdicionar.setEnabled(true);
 				}else {
 					JOptionPane.showMessageDialog(null, "Nenhum cliente foi removido.");
 				}
