@@ -62,6 +62,8 @@ public class TelaOs extends JInternalFrame {
 	private JRadioButton rdbOrcamento;
 	private JRadioButton rdbOrdem;
 	private String tipo;
+	
+	private JComboBox cbxSituacao;
 
 	public TelaOs() {
 		
@@ -141,7 +143,7 @@ public class TelaOs extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("Situação");
 
-		JComboBox cbxSituacao = new JComboBox();
+		cbxSituacao = new JComboBox();
 		cbxSituacao.setModel(new DefaultComboBoxModel(new String[] {"Na bancada", "Entrega OK", "Orçamento REPROVADO", "Aguardando Aprovação", "Aguradando Peças", "Abandonado pelo Cliente", "Retornou"}));
 
 		JPanel panel_1 = new JPanel();
@@ -149,6 +151,11 @@ public class TelaOs extends JInternalFrame {
 				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		JButton btnOsAdicionar = new JButton("");
+		btnOsAdicionar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				emitir_os();
+			}
+		});
 		btnOsAdicionar.setToolTipText("Adicionar OS");
 		btnOsAdicionar.setPreferredSize(new Dimension(75, 47));
 		btnOsAdicionar.setIcon(new ImageIcon(TelaOs.class.getResource("/br/com/infox/icones/adicionar.png")));
@@ -277,6 +284,7 @@ public class TelaOs extends JInternalFrame {
 		panel_2.add(lblNewLabel_5_1_3);
 
 		txtValor = new JTextField();
+		txtValor.setText("0.00");
 		txtValor.setColumns(10);
 		txtValor.setBounds(304, 89, 122, 20);
 		panel_2.add(txtValor);
@@ -355,6 +363,15 @@ public class TelaOs extends JInternalFrame {
 		});
 
 	}
+	private void limpar_tela_os() {
+		txtCliPesquisar.setText("");
+		txtEquipamento.setText("");
+		txtDefeito.setText("");
+		txtServico.setText("");
+		txtTecnico.setText("");
+		txtValor.setText("");
+		((DefaultTableModel) tblClientes.getModel()).setRowCount(0);
+	}
 
 	private void pesquisar_cliente() {
 		String sql = "select idCli as Id, nomeCli as Nome, fonecli as Telefone from tbclientes where nomecli like ?";
@@ -380,8 +397,25 @@ public class TelaOs extends JInternalFrame {
 		String sql = "insert into tbos (tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli) values (?,?,?,?,?,?,?,?)";
 		try {
 			pst = conexao.prepareStatement(sql);
+			pst.setString(1, tipo);
+			pst.setString(2, cbxSituacao.getSelectedItem().toString());
+			pst.setString(3, txtEquipamento.getText());
+			pst.setString(4, txtDefeito.getText());
+			pst.setString(5, txtServico.getText());
+			pst.setString(6, txtTecnico.getText());
+			pst.setString(7, txtValor.getText().replace(",", "."));
+			pst.setString(8, txtCliId.getText());		
 			
-			
+			//Validacao dos campos obrigatorios
+			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Atenção preencha todos os campos obrigatórios");
+			} else {
+				int adicionado = pst.executeUpdate();
+				if(adicionado > 0) {
+					JOptionPane.showMessageDialog(null, "Os omitida com sucesso");
+					limpar_tela_os();
+				}
+			}
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e);
