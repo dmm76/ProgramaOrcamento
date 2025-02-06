@@ -67,22 +67,18 @@ public class TelaOs extends JInternalFrame {
 	JRadioButton rdbOrcamento = new JRadioButton("Orçamento");
 	JRadioButton rdbOrdem = new JRadioButton("Ordem de Serviço");
 	ButtonGroup grupo = new ButtonGroup();
-	
-	private JButton btnOsAdicionar;
 
-	
+	private JButton btnOsAdicionar;
 
 	public TelaOs() {
 
-		
 		rdbOrcamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// atribuindo um texto a variavel tipo se selecionada
 				tipo = "Orçamento";
 			}
 		});
-		
-		
+
 		rdbOrdem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// atribuindo um texto a variavel tipo se selecionada
@@ -168,17 +164,27 @@ public class TelaOs extends JInternalFrame {
 				pesquisar_os();
 			}
 		});
-		
+
 		btnOsProcurar.setToolTipText("Procurar OS");
 		btnOsProcurar.setPreferredSize(new Dimension(75, 47));
 		btnOsProcurar.setIcon(new ImageIcon(TelaOs.class.getResource("/br/com/infox/icones/find.png")));
 
 		JButton btnOsEditar = new JButton("");
+		btnOsEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				alterar_os();
+			}
+		});
 		btnOsEditar.setToolTipText("Editar OS");
 		btnOsEditar.setPreferredSize(new Dimension(75, 47));
 		btnOsEditar.setIcon(new ImageIcon(TelaOs.class.getResource("/br/com/infox/icones/edit.png")));
 
 		JButton btnOsRemover = new JButton("");
+		btnOsRemover.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluir_os();
+			}
+		});
 		btnOsRemover.setToolTipText("Remover OS");
 		btnOsRemover.setPreferredSize(new Dimension(75, 47));
 		btnOsRemover.setIcon(new ImageIcon(TelaOs.class.getResource("/br/com/infox/icones/remove.png")));
@@ -193,60 +199,56 @@ public class TelaOs extends JInternalFrame {
 
 		// Aplicando o GroupLayout ao conteúdo do JInternalFrame
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 253, GroupLayout.PREFERRED_SIZE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(22)
-									.addComponent(cbxSituacao, 0, 129, Short.MAX_VALUE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(18)
-									.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE))))
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup().addContainerGap()
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+						.createSequentialGroup()
+						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 253, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup().addGap(22).addComponent(cbxSituacao, 0,
+										129, Short.MAX_VALUE))
+								.addGroup(groupLayout.createSequentialGroup().addGap(18).addComponent(lblNewLabel_2,
+										GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE))))
 						.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 447, Short.MAX_VALUE)
 						.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnOsAdicionar, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnOsProcurar, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnOsEditar, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnOsRemover, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnOsImprimir, GroupLayout.PREFERRED_SIZE, 75, Short.MAX_VALUE)))
-					.addGap(51))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel_2)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(cbxSituacao, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(67))
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnOsAdicionar, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnOsProcurar, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnOsEditar, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
-							.addComponent(btnOsRemover, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnOsImprimir, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
+								.addComponent(btnOsAdicionar, GroupLayout.PREFERRED_SIZE, 75,
+										GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(btnOsProcurar, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(btnOsEditar, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(btnOsRemover, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(btnOsImprimir, GroupLayout.PREFERRED_SIZE, 75, Short.MAX_VALUE)))
+				.addGap(51)));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addGroup(groupLayout.createSequentialGroup().addComponent(lblNewLabel_2)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(cbxSituacao, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
+										.addGap(67))
+								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE).addGap(18)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout
+								.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnOsAdicionar, GroupLayout.PREFERRED_SIZE, 47,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnOsProcurar, GroupLayout.PREFERRED_SIZE, 47,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnOsEditar, GroupLayout.PREFERRED_SIZE, 47,
+												GroupLayout.PREFERRED_SIZE))
+								.addComponent(btnOsRemover, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
+								.addComponent(btnOsImprimir, GroupLayout.PREFERRED_SIZE, 47,
+										GroupLayout.PREFERRED_SIZE))
+						.addContainerGap()));
 		panel_2.setLayout(null);
 
 		JLabel lblNewLabel_5 = new JLabel("*Equipamento");
@@ -457,30 +459,94 @@ public class TelaOs extends JInternalFrame {
 				if (tipo.equals("Orçamento")) {
 					rdbOrcamento.setSelected(true);
 					rdbOrdem.setSelected(false);
-					
+
 				} else if (tipo.equals("OS")) {
 					rdbOrdem.setSelected(true);
 					rdbOrcamento.setSelected(false);
-					
+
 				}
 
 				// 🔹 Pegando a situação no banco
 				String situacao = rs.getString("situacao"); // Nome correto da coluna
 				cbxSituacao.setSelectedItem(situacao); // Define a opção no ComboBox
-				
-				//evitando problemas
+
+				// evitando problemas
 				btnOsAdicionar.setEnabled(false);
 				txtCliPesquisar.setEnabled(false);
 				tblClientes.setVisible(false);
 
 			} else {
 				JOptionPane.showMessageDialog(null, "Os não cadastrada");
+				
 			}
 		} catch (java.sql.SQLSyntaxErrorException e) {
 			JOptionPane.showMessageDialog(null, "OS inválida");
-			//System.out.println(e);
-		}catch(Exception e2) {
+			// System.out.println(e);
+		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(null, e2);
+		}
+	}
+
+	private void alterar_os() {
+		String sql = "update tbos set tipo=?, situacao=?, equipamento=?, defeito=?, servico=?, tecnico=?, valor=? where os=? ";
+		try {
+			pst = conexao.prepareStatement(sql);
+			pst.setString(1, tipo);
+			pst.setString(2, cbxSituacao.getSelectedItem().toString());
+			pst.setString(3, txtEquipamento.getText());
+			pst.setString(4, txtDefeito.getText());
+			pst.setString(5, txtServico.getText());
+			pst.setString(6, txtTecnico.getText());
+			pst.setString(7, txtValor.getText().replace(",", "."));
+			pst.setString(8, textNumeroOs.getText());
+
+			// Validacao dos campos obrigatorios
+			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Atenção preencha todos os campos obrigatórios");
+			} else {
+				int adicionado = pst.executeUpdate();
+				if (adicionado > 0) {
+					JOptionPane.showMessageDialog(null, "Os alterada com sucesso");
+					limpar_tela_os();
+					textNumeroOs.setText("");
+					textDataOs.setText("");
+
+					// Habilitar os Objetos
+					btnOsAdicionar.setEnabled(true);
+					txtCliPesquisar.setEnabled(true);
+					tblClientes.setVisible(true);
+				}
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+
+	}
+
+	private void excluir_os() {
+		int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta Os?", "Atenção",
+				JOptionPane.YES_NO_OPTION);
+		if (confirma == JOptionPane.YES_OPTION) {
+			String sql = "delete from tbos where os=?";
+			try {
+				pst = conexao.prepareStatement(sql);
+				pst.setString(1, textNumeroOs.getText());
+				int apagado = pst.executeUpdate();
+				if (apagado > 0) {
+					JOptionPane.showMessageDialog(null, "Os excluída com sucesso");
+					limpar_tela_os();
+					textNumeroOs.setText("");
+					textDataOs.setText("");
+
+					// Habilitar os Objetos
+					btnOsAdicionar.setEnabled(true);
+					txtCliPesquisar.setEnabled(true);
+					tblClientes.setVisible(true);
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e);
+			}
 		}
 	}
 }
