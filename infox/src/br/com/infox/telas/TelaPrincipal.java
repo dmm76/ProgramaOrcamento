@@ -1,10 +1,17 @@
 package br.com.infox.telas;
 
 import java.awt.EventQueue;
+import java.sql.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import br.com.infox.dal.ModuloConexao;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -22,12 +29,16 @@ import javax.swing.ImageIcon;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class TelaPrincipal extends JFrame {
+	Connection conexao = null;
 
 	private static final long serialVersionUID = 1L;
 	//private JLabel lblData;
@@ -61,6 +72,7 @@ public class TelaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaPrincipal() {
+		conexao = ModuloConexao.conector();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -118,9 +130,53 @@ public class TelaPrincipal extends JFrame {
 		menRelatorio.setEnabled(false);
 		menuBar.add(menRelatorio);
 		
-		JMenuItem menRelatorioServicos = new JMenuItem("Serviços");
-		menRelatorioServicos.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
-		menRelatorio.add(menRelatorioServicos);		
+		JMenuItem menRelCli = new JMenuItem("Clientes");
+		menRelCli.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        int confirma = JOptionPane.showConfirmDialog(
+		            null, "Confirma a impressão desse relatório?", "Atenção", JOptionPane.YES_NO_OPTION
+		        );
+		        
+		        if (confirma == JOptionPane.YES_OPTION) {
+		            try {
+		                // Certifique-se de que a conexão com o banco está ativa
+		                if (conexao == null || conexao.isClosed()) {
+		                    JOptionPane.showMessageDialog(null, "Erro: Conexão com o banco de dados está fechada!");
+		                    return;
+		                }
+
+		                // Criar um HashMap para os parâmetros do relatório (mesmo se estiver vazio)
+		                Map<String, Object> parametros = new HashMap<>();
+
+		                // Caminho do relatório (verifique se está correto)
+		                String caminhoRelatorio = "C:\\dbxrelatorios\\clientes.jasper";
+		                
+		                // Verificar se o arquivo existe antes de tentar abrir
+		                File relatorio = new File(caminhoRelatorio);
+		                if (!relatorio.exists()) {
+		                    JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
+		                    return;
+		                }
+
+		                // Preparar e exibir o relatório
+		                JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
+		                JasperViewer.viewReport(print, false);
+		                
+		            } catch (Exception e2) {
+		                e2.printStackTrace(); // Exibir erro detalhado no console
+		                JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e2.getMessage());
+		            }
+		        }
+		    }
+		});
+
+		// Configuração do atalho de teclado
+		menRelCli.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		menRelatorio.add(menRelCli);
+		
+		JMenuItem menRelServ = new JMenuItem("Serviços");
+		menRelServ.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
+		menRelatorio.add(menRelServ);		
 		
 		JMenu menAjuda = new JMenu("Ajuda");
 		menuBar.add(menAjuda);
