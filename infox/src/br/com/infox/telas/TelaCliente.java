@@ -1,8 +1,29 @@
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2025 Douglas Marcelo Monquero
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, subject to the following conditions:
+ * 
+ * 1. **Attribution Required**: Any use, modification, or distribution of this
+ *    software must include credit to the original author, Douglas Marcelo Monquero,
+ *    in any derivative works or publications.
+ *
+ * 2. **Disclaimer**: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package br.com.infox.telas;
 
-import java.awt.EventQueue;
 import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -23,6 +44,15 @@ import java.awt.event.KeyEvent;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+/**
+ * Tela de gerenciamento de clientes do sistema. Permite adicionar, editar,
+ * excluir e pesquisar clientes.
+ * 
+ * @author Douglas Marcelo Monquero
+ * @version 1.1
+ * @since 2025
+ */
 
 public class TelaCliente extends JInternalFrame {
 
@@ -96,6 +126,7 @@ public class TelaCliente extends JInternalFrame {
 		getContentPane().add(lblNewLabel);
 
 		btnCliAdicionar = new JButton("");
+		btnCliAdicionar.setToolTipText("Adicionar");
 		btnCliAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Chamar o método adicionar
@@ -107,6 +138,7 @@ public class TelaCliente extends JInternalFrame {
 		getContentPane().add(btnCliAdicionar);
 
 		btnCliEditar = new JButton("");
+		btnCliEditar.setToolTipText("Editar");
 		btnCliEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				alterar();
@@ -117,6 +149,7 @@ public class TelaCliente extends JInternalFrame {
 		getContentPane().add(btnCliEditar);
 
 		btnCliRemover = new JButton("");
+		btnCliRemover.setToolTipText("Excluir");
 		btnCliRemover.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				remover();
@@ -188,6 +221,10 @@ public class TelaCliente extends JInternalFrame {
 		getContentPane().add(scrollPane);
 	}
 
+	/**
+	 * Limpa todos os campos do formulário e esvazia a tabela de clientes. Útil após
+	 * adicionar, editar ou remover um cliente.
+	 */
 	private void limparTela() {
 		textCliPesquisar.setText(null);
 		txtCliName.setText("");
@@ -197,6 +234,12 @@ public class TelaCliente extends JInternalFrame {
 		((DefaultTableModel) tblClientes.getModel()).setRowCount(0);
 	}
 
+	/**
+	 * Adiciona um novo cliente ao banco de dados. Valida os campos obrigatórios
+	 * antes de inserir os dados.
+	 * 
+	 * @throws SQLException Se ocorrer um erro ao inserir no banco de dados.
+	 */
 	private void adicionar() {
 		String sql = "insert into tbclientes(nomecli, endcli, fonecli, emailcli) values(?,?,?,?)";
 		try {
@@ -222,7 +265,12 @@ public class TelaCliente extends JInternalFrame {
 		}
 	}
 
-	// Método para pesquisar pelo nome com filtro
+	/**
+	 * Pesquisa clientes no banco de dados pelo nome. Atualiza a tabela com os
+	 * resultados encontrados.
+	 * 
+	 * @throws SQLException Se ocorrer um erro na consulta ao banco.
+	 */
 	private void pesquisar() {
 		String sql = "select * from tbclientes where nomecli like ?";
 		try {
@@ -275,7 +323,10 @@ public class TelaCliente extends JInternalFrame {
 		}
 	}
 
-	// Método para setar os campos do formulário com o conteúdo da tabela
+	/**
+	 * Preenche os campos do formulário com os dados do cliente selecionado na
+	 * tabela. Se nenhuma linha for selecionada, não realiza nenhuma ação.
+	 */
 	public void setar_campos() {
 		int setar = tblClientes.getSelectedRow();
 		if (setar >= 0) { // Verifica se há uma linha selecionada
@@ -298,6 +349,12 @@ public class TelaCliente extends JInternalFrame {
 		}
 	}
 
+	/**
+	 * Atualiza os dados do cliente selecionado no banco de dados. Valida os campos
+	 * obrigatórios antes de realizar a atualização.
+	 *
+	 * @throws SQLException Se ocorrer um erro ao atualizar os dados.
+	 */
 	private void alterar() {
 		String sql = "update tbclientes set nomecli=?, endcli=?, fonecli=?, emailcli=? where idcli=?";
 		try {
@@ -334,35 +391,46 @@ public class TelaCliente extends JInternalFrame {
 				limparTela();
 				btnCliAdicionar.setEnabled(true);
 			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Erro ao alterar cliente: " + e.getMessage());
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null,
+					"Erro ao alterar cliente! Verifique a conexão com o banco.\n" + e.getMessage(),
+					"Erro de Banco de Dados", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace(); // Exibe detalhes no console para depuração
 		}
 	}
-	
+
+	/**
+	 * Remove o cliente selecionado da base de dados. Exibe uma mensagem de
+	 * confirmação antes de excluir.
+	 *
+	 * @throws SQLException Se ocorrer um erro ao excluir o cliente.
+	 */
 	private void remover() {
 		// antes de remover necessario fazer a confirmacao da remocao
-		int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o cliente", "Atenção",
-				JOptionPane.YES_NO_OPTION);
+		int confirma = JOptionPane.showConfirmDialog(null,
+				"Tem certeza que deseja remover este cliente? Esta ação não pode ser desfeita.",
+				"Confirmação de Exclusão", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
 		if (confirma == JOptionPane.YES_OPTION) {
 			int linhaSelecionada = tblClientes.getSelectedRow();
 			if (linhaSelecionada < 0) {
-	            JOptionPane.showMessageDialog(null, "Selecione um cliente para remover!");
-	            return;
-	        }
-			// Recupera o ID do cliente da linha selecionada (supondo que o ID esteja na coluna 0)
-	        String idCliente = tblClientes.getModel().getValueAt(linhaSelecionada, 0).toString();
-	        System.out.println(idCliente);
+				JOptionPane.showMessageDialog(null, "Selecione um cliente para remover!");
+				return;
+			}
+			// Recupera o ID do cliente da linha selecionada (supondo que o ID esteja na
+			// coluna 0)
+			String idCliente = tblClientes.getModel().getValueAt(linhaSelecionada, 0).toString();
+			System.out.println(idCliente);
 			String sql = "delete from tbclientes where idcli=?";
 			try {
 				pst = conexao.prepareStatement(sql);
 				pst.setString(1, idCliente);
-				int apagado = pst.executeUpdate();				
-				if (apagado > 0) {					
-					JOptionPane.showMessageDialog(null, "Cliente removido com sucesso!");					
+				int apagado = pst.executeUpdate();
+				if (apagado > 0) {
+					JOptionPane.showMessageDialog(null, "Cliente removido com sucesso!");
 					limparTela();
 					btnCliAdicionar.setEnabled(true);
-				}else {
+				} else {
 					JOptionPane.showMessageDialog(null, "Nenhum cliente foi removido.");
 				}
 			} catch (Exception e) {

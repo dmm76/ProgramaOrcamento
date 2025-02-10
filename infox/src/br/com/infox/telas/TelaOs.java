@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2025 Douglas Marcelo Monquero
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, subject to the following conditions:
+ * 
+ * 1. **Attribution Required**: Any use, modification, or distribution of this
+ *    software must include credit to the original author, Douglas Marcelo Monquero,
+ *    in any derivative works or publications.
+ *
+ * 2. **Disclaimer**: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package br.com.infox.telas;
 
 import java.awt.Dimension;
@@ -14,8 +37,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.ImageIcon;
@@ -39,12 +60,20 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+
+/**
+ * Tela responsável pelo gerenciamento de Ordens de Serviço (OS) no sistema.
+ * Permite criar, alterar, excluir, pesquisar e imprimir OSs, além de interagir com o banco de dados.
+ * 
+ * @author Douglas Marcelo Monquero
+ * @version 1.1
+ * @since 2025
+ */
 
 public class TelaOs extends JInternalFrame {
 
@@ -88,11 +117,11 @@ public class TelaOs extends JInternalFrame {
 		setTitle("Ordem de Serviços");
 		setClosable(true); // Permite fechar o JInternalFrame
 		setIconifiable(true); // Permite minimizar
-		setMaximizable(true); //Permite maximizar
+		setMaximizable(true); // Permite maximizar
 		setResizable(false); // Permite redimensionamento
 		setSize(482, 518);
 		getContentPane().setLayout(null);
-		
+
 		rdbOrcamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// atribuindo um texto a variavel tipo se selecionada
@@ -156,7 +185,9 @@ public class TelaOs extends JInternalFrame {
 		JLabel lblNewLabel_2 = new JLabel("Situação");
 
 		cbxSituacao = new JComboBox();
-		cbxSituacao.setModel(new DefaultComboBoxModel(new String[] {"", "Na bancada", "Entrega OK", "Orçamento REPROVADO", "Aguardando Aprovação", "Aguradando Peças", "Abandonado pelo Cliente", "Retornou"}));
+		cbxSituacao
+				.setModel(new DefaultComboBoxModel(new String[] { "", "Na bancada", "Entrega OK", "Orçamento REPROVADO",
+						"Aguardando Aprovação", "Aguradando Peças", "Abandonado pelo Cliente", "Retornou" }));
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Cliente",
@@ -402,10 +433,12 @@ public class TelaOs extends JInternalFrame {
 
 	}
 
-	// Limpar Campos e gerenciar os botoes Botoes
+	/**
+     * Método para limpar a tela Ordem de Serviço, Habilitar e Desabilitar Botões     
+     */
 	private void limpar_tela_os() {
 		textNumeroOs.setText("");
-		textDataOs.setText("");		
+		textDataOs.setText("");
 		txtCliPesquisar.setText("");
 		txtEquipamento.setText("");
 		txtDefeito.setText("");
@@ -413,8 +446,8 @@ public class TelaOs extends JInternalFrame {
 		txtTecnico.setText("");
 		txtValor.setText("0.00");
 		((DefaultTableModel) tblClientes.getModel()).setRowCount(0);
-		
-		//Definir para o primeiro item do Combobox (posicao inicial)
+
+		// Definir para o primeiro item do Combobox (posicao inicial)
 		cbxSituacao.setSelectedIndex(0);
 
 		// Habilitar os Objetos
@@ -422,13 +455,16 @@ public class TelaOs extends JInternalFrame {
 		txtCliPesquisar.setEnabled(true);
 		tblClientes.setVisible(true);
 		btnOsProcurar.setEnabled(true);
-		
-		//Desabiltar os Botoes
+
+		// Desabiltar os Botoes
 		btnOsEditar.setEnabled(false);
 		btnOsRemover.setEnabled(false);
 		btnOsImprimir.setEnabled(false);
 	}
-
+	
+	/**
+     * Método para pesquisar Clientes Cadastrados.     
+     */
 	private void pesquisar_cliente() {
 		String sql = "select idCli as Id, nomeCli as Nome, fonecli as Telefone from tbclientes where nomecli like ?";
 		try {
@@ -436,21 +472,32 @@ public class TelaOs extends JInternalFrame {
 			pst.setString(1, txtCliPesquisar.getText() + "%"); // "jo%" pesquisa o restante ao digitar
 			rs = pst.executeQuery();
 			// preencher a tabela
-			tblClientes.setModel(DbUtils.resultSetToTableModel(rs));					
+			tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e);
 		}
 	}
-
+	
+	/**
+	 * Método para sanar problemas de exceção nas tabelas
+     * Se o usuário clicar em uma linha vazia, setar será -1, e getValueAt(-1, 0)
+	 * causará uma exceção.    
+     */
 	private void setar_campos() {
-		//Se o usuário clicar em uma linha vazia, setar será -1, e getValueAt(-1, 0) causará uma exceção.
-	    int setar = tblClientes.getSelectedRow();
-	    if (setar >= 0) {
-	        txtCliId.setText(tblClientes.getModel().getValueAt(setar, 0).toString());
-	    }
+		
+		int setar = tblClientes.getSelectedRow();
+		if (setar >= 0) {
+			txtCliId.setText(tblClientes.getModel().getValueAt(setar, 0).toString());
+		}
 	}
 
-	// metodo para cadastrar um OS
+	/**
+	 * Emite uma nova Ordem de Serviço (OS) no banco de dados.
+	 * Valida os campos obrigatórios antes de inserir.
+	 * 
+	 * @throws SQLException Se houver erro ao inserir no banco.
+	 * @throws NumberFormatException Se o valor informado for inválido.
+	 */
 	private void emitir_os() {
 		String sql = "insert into tbos (tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli) values (?,?,?,?,?,?,?,?)";
 		try {
@@ -465,18 +512,19 @@ public class TelaOs extends JInternalFrame {
 			pst.setString(8, txtCliId.getText());
 
 			// Validacao dos campos obrigatorios
-			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty() || cbxSituacao.getSelectedItem().equals(" ") ) {
+			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty()
+					|| cbxSituacao.getSelectedItem().equals(" ")) {
 				JOptionPane.showMessageDialog(null, "Atenção preencha todos os campos obrigatórios");
 			} else {
 				int adicionado = pst.executeUpdate();
 				if (adicionado > 0) {
 					JOptionPane.showMessageDialog(null, "Os omitida com sucesso");
 					recuperar_os();
-					//limpar_tela_os();
+					// limpar_tela_os();
 					btnOsAdicionar.setEnabled(false);
 					btnOsProcurar.setEnabled(false);
 					btnOsImprimir.setEnabled(true);
-					
+
 				}
 			}
 
@@ -484,10 +532,16 @@ public class TelaOs extends JInternalFrame {
 			JOptionPane.showMessageDialog(null, e);
 		}
 	}
-
+	
+	/**
+     * Método para pesquisar uma OS existente pelo número.
+     * 
+     * @return Retorna os detalhes da OS encontrada.
+     */
 	private void pesquisar_os() {
 		String num_os = JOptionPane.showInputDialog("Número da OS");
-		String sql = "select os, date_format(data_os, '%d/%m/%Y - %H:%i'), tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli from tbos where os= " + num_os;
+		String sql = "select os, date_format(data_os, '%d/%m/%Y - %H:%i'), tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli from tbos where os= "
+				+ num_os;
 		try {
 			pst = conexao.prepareStatement(sql);
 			rs = pst.executeQuery();
@@ -520,7 +574,7 @@ public class TelaOs extends JInternalFrame {
 				btnOsAdicionar.setEnabled(false);
 				txtCliPesquisar.setEnabled(false);
 				tblClientes.setVisible(false);
-				
+
 				btnOsEditar.setEnabled(true);
 				btnOsRemover.setEnabled(true);
 				btnOsImprimir.setEnabled(true);
@@ -536,7 +590,10 @@ public class TelaOs extends JInternalFrame {
 			JOptionPane.showMessageDialog(null, e2);
 		}
 	}
-
+	
+	/**
+     * Método para alterar uma Ordem de Serviço (OS).     
+     */
 	private void alterar_os() {
 		String sql = "update tbos set tipo=?, situacao=?, equipamento=?, defeito=?, servico=?, tecnico=?, valor=? where os=? ";
 		try {
@@ -551,7 +608,8 @@ public class TelaOs extends JInternalFrame {
 			pst.setString(8, textNumeroOs.getText());
 
 			// Validacao dos campos obrigatorios
-			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty() || cbxSituacao.getSelectedItem().equals(" ") ) {
+			if (txtCliId.getText().isEmpty() || txtEquipamento.getText().isEmpty() || txtDefeito.getText().isEmpty()
+					|| cbxSituacao.getSelectedItem().equals(" ")) {
 				JOptionPane.showMessageDialog(null, "Atenção preencha todos os campos obrigatórios");
 			} else {
 				int adicionado = pst.executeUpdate();
@@ -566,7 +624,12 @@ public class TelaOs extends JInternalFrame {
 		}
 
 	}
-
+	
+	/**
+	 * Exclui uma Ordem de Serviço (OS) do banco de dados.
+	 * 
+	 * @throws SQLException Se ocorrer um erro ao acessar o banco.
+	 */
 	private void excluir_os() {
 		int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta Os?", "Atenção",
 				JOptionPane.YES_NO_OPTION);
@@ -585,54 +648,64 @@ public class TelaOs extends JInternalFrame {
 			}
 		}
 	}
-	//metodo para imprimir uma os
-	private void imprimir_os(){
-		//imprimindo um ordem de serviços
-		int confirma = JOptionPane.showConfirmDialog(
-	            null, "Confirma a impressão da OS?", "Atenção", JOptionPane.YES_NO_OPTION
-	        );
-	        
-	        if (confirma == JOptionPane.YES_OPTION) {
-	            try {
-	            	//NOVIDADE - usando a classe HashMap para criar um filtro - JAspeReport
-	            	
-	                // Certifique-se de que a conexão com o banco está ativa
-	                if (conexao == null || conexao.isClosed()) {
-	                    JOptionPane.showMessageDialog(null, "Erro: Conexão com o banco de dados está fechada!");
-	                    return;
-	                }
 
-	                // Criar um HashMap para os parâmetros do relatório (mesmo se estiver vazio)
-	                Map<String, Object> parametros = new HashMap<>();
-	                parametros.put("os", Integer.parseInt(textNumeroOs.getText()));
-	                
-	                // Caminho do relatório (verifique se está correto)
-	                String caminhoRelatorio = "C:\\dbxrelatorios\\os.jasper";
-	                
-	                // Verificar se o arquivo existe antes de tentar abrir
-	                File relatorio = new File(caminhoRelatorio);
-	                if (!relatorio.exists()) {
-	                    JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
-	                    return;
-	                }
+	/**
+	 * Gera e exibe um relatório PDF da Ordem de Serviço (OS) usando JasperReports.
+	 * 
+	 * @throws FileNotFoundException Se o arquivo do relatório não for encontrado.
+	 * @throws SQLException Se houver falha na conexão com o banco de dados.
+	 */
+	private void imprimir_os() {
+		// imprimindo um ordem de serviços
+		int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão da OS?", "Atenção",
+				JOptionPane.YES_NO_OPTION);
 
-	                // Preparar e exibir o relatório
-	                JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
-	                JasperViewer.viewReport(print, false);
-	                
-	            } catch (Exception e2) {
-	                e2.printStackTrace(); // Exibir erro detalhado no console
-	                JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e2.getMessage());
-	            }
-	        }
-	        
+		if (confirma == JOptionPane.YES_OPTION) {
+			try {
+				// NOVIDADE - usando a classe HashMap para criar um filtro - JAspeReport
+
+				// Certifique-se de que a conexão com o banco está ativa
+				if (conexao == null || conexao.isClosed()) {
+					JOptionPane.showMessageDialog(null, "Erro: Conexão com o banco de dados está fechada!");
+					return;
+				}
+
+				// Criar um HashMap para os parâmetros do relatório (mesmo se estiver vazio)
+				Map<String, Object> parametros = new HashMap<>();
+				parametros.put("os", Integer.parseInt(textNumeroOs.getText()));
+
+				// Caminho do relatório (verifique se está correto)
+				String caminhoRelatorio = "C:\\dbxrelatorios\\os.jasper";
+
+				// Verificar se o arquivo existe antes de tentar abrir
+				File relatorio = new File(caminhoRelatorio);
+				if (!relatorio.exists()) {
+					JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
+					return;
+				}
+
+				// Preparar e exibir o relatório
+				JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
+				JasperViewer.viewReport(print, false);
+
+			} catch (Exception e2) {
+				e2.printStackTrace(); // Exibir erro detalhado no console
+				JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e2.getMessage());
+			}
+		}
+
 	}
+	
+	/**
+     * Método para recuperar uma nova id de Ordem de Serviço (OS).
+    */
+
 	private void recuperar_os() {
 		String sql = "select max(os) from tbos";
 		try {
-			pst=conexao.prepareStatement(sql);
-			rs=pst.executeQuery();
-			if(rs.next()) {
+			pst = conexao.prepareStatement(sql);
+			rs = pst.executeQuery();
+			if (rs.next()) {
 				textNumeroOs.setText(rs.getString(1));
 			}
 		} catch (Exception e) {

@@ -1,29 +1,57 @@
-package br.com.infox.telas;
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2025 Douglas Marcelo Monquero
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, subject to the following conditions:
+ * 
+ * 1. **Attribution Required**: Any use, modification, or distribution of this
+ *    software must include credit to the original author, Douglas Marcelo Monquero,
+ *    in any derivative works or publications.
+ *
+ * 2. **Disclaimer**: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
-import java.awt.EventQueue;
+/**
+ * Tela de Cadastro de Usuários
+ * Permite adicionar, consultar, alterar e remover usuários do sistema.
+ * 
+ * @author Douglas Marcelo Monquero
+ * @version 1.1
+ */
+package br.com.infox.telas;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JDesktopPane;
-import java.awt.Container;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.sql.*;
 import br.com.infox.dal.ModuloConexao;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
+/**
+ * Classe TelaUsuario que representa a interface de gerenciamento de usuários.
+ */
 public class TelaUsuario extends JInternalFrame {
+
+	private static final long serialVersionUID = 1L;
 
 	Connection conexao = null;
 	PreparedStatement pst = null;
 	ResultSet rs = null;
 
-	private static final long serialVersionUID = 1L;
 	private JTextField txtUserId;
 	private JTextField txtUserName;
 	private JTextField txtUserPhone;
@@ -32,11 +60,9 @@ public class TelaUsuario extends JInternalFrame {
 	private JComboBox<String> cbxPerfil;
 
 	/**
-	 * Launch the application.
-	 */
-
-	/**
-	 * Create the frame.
+	 * Construtor da TelaUsuario.
+	 * 
+	 * @param desktopPane JDesktopPane onde a tela será exibida.
 	 */
 	public TelaUsuario(JDesktopPane desktopPane) {
 		setTitle("Usuários");
@@ -47,29 +73,32 @@ public class TelaUsuario extends JInternalFrame {
 		setSize(482, 518); // Define o tamanho do frame
 		getContentPane().setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("*Id");
-		lblNewLabel.setBounds(38, 35, 22, 14);
-		getContentPane().add(lblNewLabel);
+		// Chama o modulo de conexao com o banco
+		conexao = ModuloConexao.conector();
 
-		JLabel lblNewLabel_1 = new JLabel("*Nome");
-		lblNewLabel_1.setBounds(21, 206, 46, 14);
-		getContentPane().add(lblNewLabel_1);
+		JLabel lblId = new JLabel("*Id");
+		lblId.setBounds(38, 35, 22, 14);
+		getContentPane().add(lblId);
 
-		JLabel lblNewLabel_2 = new JLabel("Fone");
-		lblNewLabel_2.setBounds(21, 255, 46, 14);
-		getContentPane().add(lblNewLabel_2);
+		JLabel lblNome = new JLabel("*Nome");
+		lblNome.setBounds(21, 206, 46, 14);
+		getContentPane().add(lblNome);
 
-		JLabel lblNewLabel_3 = new JLabel("*Login");
-		lblNewLabel_3.setBounds(21, 90, 46, 14);
-		getContentPane().add(lblNewLabel_3);
+		JLabel lblFone = new JLabel("Fone");
+		lblFone.setBounds(21, 255, 46, 14);
+		getContentPane().add(lblFone);
 
-		JLabel lblNewLabel_4 = new JLabel("*Senha");
-		lblNewLabel_4.setBounds(21, 139, 46, 14);
-		getContentPane().add(lblNewLabel_4);
+		JLabel lblLogin = new JLabel("*Login");
+		lblLogin.setBounds(21, 90, 46, 14);
+		getContentPane().add(lblLogin);
 
-		JLabel lblNewLabel_5 = new JLabel("*Perfil");
-		lblNewLabel_5.setBounds(186, 35, 46, 14);
-		getContentPane().add(lblNewLabel_5);
+		JLabel lblSenha = new JLabel("*Senha");
+		lblSenha.setBounds(21, 139, 46, 14);
+		getContentPane().add(lblSenha);
+
+		JLabel lblPerfil = new JLabel("*Perfil");
+		lblPerfil.setBounds(186, 35, 46, 14);
+		getContentPane().add(lblPerfil);
 
 		txtUserId = new JTextField();
 		txtUserId.setBounds(89, 32, 63, 20);
@@ -96,62 +125,41 @@ public class TelaUsuario extends JInternalFrame {
 		txtUserPassword.setBounds(89, 136, 156, 20);
 		getContentPane().add(txtUserPassword);
 
-		cbxPerfil = new JComboBox<String>();
-		cbxPerfil.setModel(new DefaultComboBoxModel<String>(new String[] { "admin", "user" }));
+		cbxPerfil = new JComboBox<>(new String[] { "admin", "user" });
 		cbxPerfil.setBounds(244, 30, 156, 22);
 		getContentPane().add(cbxPerfil);
 
-		JButton btnUserAdd = new JButton("");
-		btnUserAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// chamando o metodo adicionar
-				adicionar();
-			}
-		});
-		btnUserAdd.setToolTipText("Adicionar");
-		btnUserAdd.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/adicionar.png")));
-		btnUserAdd.setBounds(10, 393, 89, 52);
-		getContentPane().add(btnUserAdd);
+		JButton btnAdicionar = new JButton("");
+		btnAdicionar.setToolTipText("Adicionar");
+		btnAdicionar.setIcon(new ImageIcon(getClass().getResource("/br/com/infox/icones/adicionar.png")));
+		btnAdicionar.setBounds(10, 393, 89, 52);
+		btnAdicionar.addActionListener(e -> adicionar());
+		getContentPane().add(btnAdicionar);
 
-		JButton btnUserFind = new JButton("");
-		btnUserFind.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// chamando o metodo consultar
-				consultar();
-			}
-		});
-		btnUserFind.setToolTipText("Procurar");
-		btnUserFind.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/find.png")));
-		btnUserFind.setBounds(128, 393, 89, 52);
-		getContentPane().add(btnUserFind);
+		JButton btnConsultar = new JButton("");
+		btnConsultar.setToolTipText("Procurar");
+		btnConsultar.setIcon(new ImageIcon(getClass().getResource("/br/com/infox/icones/find.png")));
+		btnConsultar.setBounds(128, 393, 89, 52);
+		btnConsultar.addActionListener(e -> consultar());
+		getContentPane().add(btnConsultar);
 
-		JButton btnUserUpdate = new JButton("");
-		btnUserUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// chamando o metodo alterar
-				alterar();
-			}
-		});
-		btnUserUpdate.setToolTipText("Editar");
-		btnUserUpdate.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/edit.png")));
-		btnUserUpdate.setBounds(246, 393, 89, 52);
-		getContentPane().add(btnUserUpdate);
+		JButton btnEditar = new JButton("");
+		btnEditar.setToolTipText("Editar");
+		btnEditar.setIcon(new ImageIcon(getClass().getResource("/br/com/infox/icones/edit.png")));
+		btnEditar.setBounds(246, 393, 89, 52);
+		btnEditar.addActionListener(e -> alterar());
+		getContentPane().add(btnEditar);
 
-		JButton btnUserDelete = new JButton("");
-		btnUserDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// chamando o metodo remover usuario
-				remover();
-			}
-		});
-		btnUserDelete.setToolTipText("Remover");
-		btnUserDelete.setIcon(new ImageIcon(TelaUsuario.class.getResource("/br/com/infox/icones/remove.png")));
-		btnUserDelete.setBounds(367, 393, 89, 52);
-		getContentPane().add(btnUserDelete);
+		JButton btnRemover = new JButton("");
+		btnRemover.setToolTipText("Remover");
+		btnRemover.setIcon(new ImageIcon(getClass().getResource("/br/com/infox/icones/remove.png")));
+		btnRemover.setBounds(367, 393, 89, 52);
+		btnRemover.addActionListener(e -> remover());
+		getContentPane().add(btnRemover);
 
-		JLabel lblNewLabel_6 = new JLabel("*Campos Obrigatórios");
-		lblNewLabel_6.setBounds(21, 319, 131, 14);
-		getContentPane().add(lblNewLabel_6);
+		JLabel lblCamposObrigatorios = new JLabel("*Campos Obrigatórios");
+		lblCamposObrigatorios.setBounds(21, 319, 131, 14);
+		getContentPane().add(lblCamposObrigatorios);
 
 		// Centralizando no JDesktopPane
 		if (desktopPane != null) {
@@ -159,11 +167,14 @@ public class TelaUsuario extends JInternalFrame {
 			int y = (desktopPane.getHeight() - getHeight()) / 2;
 			setLocation(x, y);
 		}
-		// Chama o modulo de conexao com o banco
-		conexao = ModuloConexao.conector();
+
 	}
 
+	/**
+	 * Limpa os campos da tela.
+	 */
 	private void limparTela() {
+		txtUserId.setText("");
 		txtUserName.setText("");
 		txtUserPhone.setText("");
 		txtUserLogin.setText("");
@@ -171,8 +182,11 @@ public class TelaUsuario extends JInternalFrame {
 		// cbxPerfil.setSelectedIndex(-1);
 	}
 
+	/**
+	 * Consulta um usuário pelo ID.
+	 */
 	private void consultar() {
-		String sql = "select * from tbusuarios where iduser=?";
+		String sql = "SELECT * FROM tbusuarios WHERE iduser = ?";
 		try {
 			pst = conexao.prepareStatement(sql);
 			pst.setString(1, txtUserId.getText());
@@ -183,21 +197,21 @@ public class TelaUsuario extends JInternalFrame {
 				txtUserPhone.setText(rs.getString(3));
 				txtUserLogin.setText(rs.getString(4));
 				txtUserPassword.setText(rs.getString(5));
-				// a linha refere-se ao combobox
 				cbxPerfil.setSelectedItem(rs.getString(6));
 			} else {
 				JOptionPane.showMessageDialog(null, "Usuário não encontrado!");
 				limparTela();
 			}
-
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e);
+			JOptionPane.showMessageDialog(null, "Erro ao consultar usuário: " + e.getMessage());
 		}
-
 	}
 
+	/**
+	 * Adiciona um novo usuário ao banco de dados.
+	 */
 	private void adicionar() {
-		String sql = "insert into tbusuarios(iduser, usuario, fone, login, senha, perfil) values(?,?,?,?,?,?)";
+		String sql = "INSERT INTO tbusuarios(iduser, usuario, fone, login, senha, perfil) VALUES(?,?,?,?,?,?)";
 		try {
 			pst = conexao.prepareStatement(sql);
 			pst.setString(1, txtUserId.getText());
@@ -206,31 +220,20 @@ public class TelaUsuario extends JInternalFrame {
 			pst.setString(4, txtUserLogin.getText());
 			pst.setString(5, txtUserPassword.getText());
 			pst.setString(6, cbxPerfil.getSelectedItem().toString());
-			System.out.println(cbxPerfil.getSelectedItem().toString());
-			// Validacao dos campos obrigatorios
-			if ((txtUserId.getText().isEmpty()) || (txtUserName.getText().isEmpty())
-					|| (txtUserLogin.getText().isEmpty()) || (txtUserPassword.getText().isEmpty())) {
-				JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+
+			int adicionado = pst.executeUpdate();
+			if (adicionado > 0) {
+				JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso!");
 				limparTela();
-			} else {
-				// a linha abaixo atualiza a tabela de usuario com os dados do formulario
-				// Atualiza a tabela com os dados do formulário
-				// pst.executeUpdate();
-				// modificado para ao executar exibir uma mensagem caso tudo ocorreu bem
-				int adicionado = pst.executeUpdate();
-				// maior que zero pq ao adicionar uma (1) linha o programa retorna 1
-				// System.out.println(adicionado);
-				if (adicionado > 0) {
-					JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso!");
-					txtUserId.setText("");
-					limparTela();
-				}
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e);
+			JOptionPane.showMessageDialog(null, "Erro ao adicionar usuário: " + e.getMessage());
 		}
 	}
 
+	/**
+	 * Atualiza os dados de um usuário existente.
+	 */
 	private void alterar() {
 		String sql = "update tbusuarios set usuario=?, fone=?, login=?, senha=?, perfil=? where iduser=?";
 		try {
@@ -266,6 +269,9 @@ public class TelaUsuario extends JInternalFrame {
 		}
 	}
 
+	/**
+	 * Remove um usuário do banco de dados.
+	 */
 	private void remover() {
 		// antes de remover necessario fazer a confirmacao da remocao
 		int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuários", "Atenção",
