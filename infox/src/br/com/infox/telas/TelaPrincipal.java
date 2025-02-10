@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
@@ -104,9 +105,16 @@ public class TelaPrincipal extends JFrame {
 		menCadOs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//chamando a telaOs
-				TelaOs os = new TelaOs();
-				os.setVisible(true);
-				desktopPanel.add(os);
+				TelaOs os = new TelaOs(desktopPanel);
+		        desktopPanel.add(os);
+		        os.setVisible(true);
+		        try {
+		            os.setSelected(true); // Garante que a janela será ativa
+		        } catch (PropertyVetoException ex) {
+		            ex.printStackTrace();
+		        }
+		        os.toFront(); // Move a janela para frente
+		        os.moveToFront();
 			}
 		});
 		menCadOs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));

@@ -12,6 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -82,8 +83,16 @@ public class TelaOs extends JInternalFrame {
 	private JButton btnOsImprimir;
 	private JButton btnOsProcurar;
 
-	public TelaOs() {
+	public TelaOs(JDesktopPane desktopPane) {
 
+		setTitle("Ordem de Serviços");
+		setClosable(true); // Permite fechar o JInternalFrame
+		setIconifiable(true); // Permite minimizar
+		setMaximizable(true); //Permite maximizar
+		setResizable(false); // Permite redimensionamento
+		setSize(482, 518);
+		getContentPane().setLayout(null);
+		
 		rdbOrcamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// atribuindo um texto a variavel tipo se selecionada
@@ -97,12 +106,6 @@ public class TelaOs extends JInternalFrame {
 				tipo = "OS";
 			}
 		});
-
-		setTitle("Ordem de Serviços");
-		setClosable(true); // Permite fechar o JInternalFrame
-		setIconifiable(true); // Permite minimizar
-		setMaximizable(true);
-		setSize(482, 518);
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
