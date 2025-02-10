@@ -175,6 +175,45 @@ public class TelaPrincipal extends JFrame {
 		menRelatorio.add(menRelCli);
 		
 		JMenuItem menRelServ = new JMenuItem("Serviços");
+		menRelServ.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//gerando um relatorio de serviços
+				int confirma = JOptionPane.showConfirmDialog(
+			            null, "Confirma a emissão desse relatório?", "Atenção", JOptionPane.YES_NO_OPTION
+			        );
+			        
+			        if (confirma == JOptionPane.YES_OPTION) {
+			            try {
+			                // Certifique-se de que a conexão com o banco está ativa
+			                if (conexao == null || conexao.isClosed()) {
+			                    JOptionPane.showMessageDialog(null, "Erro: Conexão com o banco de dados está fechada!");
+			                    return;
+			                }
+
+			                // Criar um HashMap para os parâmetros do relatório (mesmo se estiver vazio)
+			                Map<String, Object> parametros = new HashMap<>();
+
+			                // Caminho do relatório (verifique se está correto)
+			                String caminhoRelatorio = "C:\\dbxrelatorios\\servicos.jasper";
+			                
+			                // Verificar se o arquivo existe antes de tentar abrir
+			                File relatorio = new File(caminhoRelatorio);
+			                if (!relatorio.exists()) {
+			                    JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
+			                    return;
+			                }
+
+			                // Preparar e exibir o relatório
+			                JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
+			                JasperViewer.viewReport(print, false);
+			                
+			            } catch (Exception e2) {
+			                e2.printStackTrace(); // Exibir erro detalhado no console
+			                JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e2.getMessage());
+			            }
+			        }
+			}
+		});
 		menRelServ.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
 		menRelatorio.add(menRelServ);		
 		

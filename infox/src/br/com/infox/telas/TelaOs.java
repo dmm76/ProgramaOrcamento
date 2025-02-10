@@ -25,13 +25,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import br.com.infox.dal.ModuloConexao;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.InternalFrameAdapter;
@@ -195,6 +203,11 @@ public class TelaOs extends JInternalFrame {
 		btnOsRemover.setIcon(new ImageIcon(TelaOs.class.getResource("/br/com/infox/icones/remove.png")));
 
 		btnOsImprimir = new JButton("");
+		btnOsImprimir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				imprimir_os();
+			}
+		});
 		btnOsImprimir.setEnabled(false);
 		btnOsImprimir.setToolTipText("Imprimir OS");
 		btnOsImprimir.setPreferredSize(new Dimension(75, 47));
@@ -455,6 +468,7 @@ public class TelaOs extends JInternalFrame {
 				int adicionado = pst.executeUpdate();
 				if (adicionado > 0) {
 					JOptionPane.showMessageDialog(null, "Os omitida com sucesso");
+					recuperar_os();
 					//limpar_tela_os();
 					btnOsAdicionar.setEnabled(false);
 					btnOsProcurar.setEnabled(false);
@@ -566,6 +580,60 @@ public class TelaOs extends JInternalFrame {
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, e);
 			}
+		}
+	}
+	//metodo para imprimir uma os
+	private void imprimir_os(){
+		//imprimindo um ordem de serviços
+		int confirma = JOptionPane.showConfirmDialog(
+	            null, "Confirma a impressão da OS?", "Atenção", JOptionPane.YES_NO_OPTION
+	        );
+	        
+	        if (confirma == JOptionPane.YES_OPTION) {
+	            try {
+	            	//NOVIDADE - usando a classe HashMap para criar um filtro - JAspeReport
+	            	
+	                // Certifique-se de que a conexão com o banco está ativa
+	                if (conexao == null || conexao.isClosed()) {
+	                    JOptionPane.showMessageDialog(null, "Erro: Conexão com o banco de dados está fechada!");
+	                    return;
+	                }
+
+	                // Criar um HashMap para os parâmetros do relatório (mesmo se estiver vazio)
+	                Map<String, Object> parametros = new HashMap<>();
+	                parametros.put("os", Integer.parseInt(textNumeroOs.getText()));
+	                
+	                // Caminho do relatório (verifique se está correto)
+	                String caminhoRelatorio = "C:\\dbxrelatorios\\os.jasper";
+	                
+	                // Verificar se o arquivo existe antes de tentar abrir
+	                File relatorio = new File(caminhoRelatorio);
+	                if (!relatorio.exists()) {
+	                    JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
+	                    return;
+	                }
+
+	                // Preparar e exibir o relatório
+	                JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
+	                JasperViewer.viewReport(print, false);
+	                
+	            } catch (Exception e2) {
+	                e2.printStackTrace(); // Exibir erro detalhado no console
+	                JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e2.getMessage());
+	            }
+	        }
+	        
+	}
+	private void recuperar_os() {
+		String sql = "select max(os) from tbos";
+		try {
+			pst=conexao.prepareStatement(sql);
+			rs=pst.executeQuery();
+			if(rs.next()) {
+				textNumeroOs.setText(rs.getString(1));
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
 		}
 	}
 }
