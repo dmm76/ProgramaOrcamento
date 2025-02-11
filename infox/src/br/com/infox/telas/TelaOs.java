@@ -49,18 +49,15 @@ import java.awt.Font;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-
 import br.com.infox.dal.ModuloConexao;
 import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.InputStream;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -185,9 +182,9 @@ public class TelaOs extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("Situação");
 
-		cbxSituacao = new JComboBox();
+		cbxSituacao = new JComboBox<String>();
 		cbxSituacao
-				.setModel(new DefaultComboBoxModel(new String[] { "", "Na bancada", "Entrega OK", "Orçamento REPROVADO",
+				.setModel(new DefaultComboBoxModel<String>(new String[] { "", "Na bancada", "Entrega OK", "Orçamento REPROVADO",
 						"Aguardando Aprovação", "Aguradando Peças", "Abandonado pelo Cliente", "Retornou" }));
 
 		JPanel panel_1 = new JPanel();

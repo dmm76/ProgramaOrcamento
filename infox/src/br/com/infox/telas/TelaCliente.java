@@ -121,9 +121,9 @@ public class TelaCliente extends JInternalFrame {
 		txtCliEmail.setBounds(126, 302, 283, 20);
 		getContentPane().add(txtCliEmail);
 
-		JLabel lblNewLabel = new JLabel("*Campos Obrigatórios");
-		lblNewLabel.setBounds(66, 349, 141, 14);
-		getContentPane().add(lblNewLabel);
+		JLabel lblObrigatorios = new JLabel("*Campos Obrigatórios");
+		lblObrigatorios.setBounds(66, 349, 141, 14);
+		getContentPane().add(lblObrigatorios);
 
 		btnCliAdicionar = new JButton("");
 		btnCliAdicionar.setToolTipText("Adicionar");
@@ -171,10 +171,10 @@ public class TelaCliente extends JInternalFrame {
 		getContentPane().add(textCliPesquisar);
 		textCliPesquisar.setColumns(10);
 
-		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon(TelaCliente.class.getResource("/br/com/infox/icones/searchzinho.png")));
-		lblNewLabel_1.setBounds(259, 23, 23, 20);
-		getContentPane().add(lblNewLabel_1);
+		JLabel lblIcone = new JLabel("");
+		lblIcone.setIcon(new ImageIcon(TelaCliente.class.getResource("/br/com/infox/icones/searchzinho.png")));
+		lblIcone.setBounds(259, 23, 23, 20);
+		getContentPane().add(lblIcone);
 
 		// Configurando a JTable
 		tblClientes = new JTable();
@@ -188,15 +188,19 @@ public class TelaCliente extends JInternalFrame {
 			}
 		});
 
-		tblClientes.setFillsViewportHeight(true); // Permite que a tabela ocupe todo o espaço do JScrollPane
+		tblClientes.setFillsViewportHeight(true);
+		// Permite que a tabela ocupe todo o espaço do JScrollPane
+
 		tblClientes.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null },
 				{ null, null, null, null, null }, { null, null, null, null, null }, { null, null, null, null, null },
 				{ null, null, null, null, null }, { null, null, null, null, null }, { null, null, null, null, null }, },
 				new String[] { "ID", "Nome", "Endereço", "Telefone", "Email" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class };
+			private static final long serialVersionUID = 1L;
+			Class<?>[] columnTypes = new Class<?>[] { Integer.class, String.class, String.class, String.class,
+					String.class };
 
 			@Override
-			public Class getColumnClass(int columnIndex) {
+			public Class<?> getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
@@ -272,54 +276,56 @@ public class TelaCliente extends JInternalFrame {
 	 * @throws SQLException Se ocorrer um erro na consulta ao banco.
 	 */
 	private void pesquisar() {
-		String sql = "select * from tbclientes where nomecli like ?";
-		try {
-			pst = conexao.prepareStatement(sql);
+		String sql = "SELECT * FROM tbclientes WHERE nomecli LIKE ?";
+
+		try (PreparedStatement pst = conexao.prepareStatement(sql)) { // Conexão fechada automaticamente
 			pst.setString(1, textCliPesquisar.getText() + "%");
-			rs = pst.executeQuery();
 
-			// Usa o DbUtils para preencher a tabela
-			tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
+			try (ResultSet rs = pst.executeQuery()) { // ResultSet fechado automaticamente
+				// Usa o DbUtils para preencher a tabela
+				tblClientes.setModel(DbUtils.resultSetToTableModel(rs));
 
-			// Reaplica o modelo com a restrição de edição
-			DefaultTableModel model = new DefaultTableModel(new Object[][] {},
-					new String[] { "ID", "Nome", "Endereço", "Telefone", "E-mail" }) {
-				Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class,
-						String.class };
+				// Reaplica o modelo com a restrição de edição
+				DefaultTableModel model = new DefaultTableModel(new Object[][] {},
+						new String[] { "ID", "Nome", "Endereço", "Telefone", "E-mail" }) {
 
-				@Override
-				public boolean isCellEditable(int row, int column) {
-					return false; // Impede edição
+					private static final long serialVersionUID = 1L; // 🔥 Adicionando serialVersionUID
+					Class<?>[] columnTypes = new Class<?>[] { Integer.class, String.class, String.class, String.class,
+							String.class };
+
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						return false; // Impede edição
+					}
+
+					@Override
+					public Class<?> getColumnClass(int columnIndex) {
+						return columnTypes[columnIndex];
+					}
+				};
+
+				// Copia os dados preenchidos pelo DbUtils para o novo modelo
+				for (int i = 0; i < tblClientes.getRowCount(); i++) {
+					Object[] rowData = new Object[tblClientes.getColumnCount()];
+					for (int j = 0; j < tblClientes.getColumnCount(); j++) {
+						rowData[j] = tblClientes.getValueAt(i, j);
+					}
+					model.addRow(rowData);
 				}
 
-				@Override
-				public Class getColumnClass(int columnIndex) {
-					return columnTypes[columnIndex];
-				}
-			};
+				// Define o novo modelo na tabela
+				tblClientes.setModel(model);
 
-			// Copia os dados preenchidos pelo DbUtils para o novo modelo
-			for (int i = 0; i < tblClientes.getRowCount(); i++) {
-				Object[] rowData = new Object[tblClientes.getColumnCount()];
-				for (int j = 0; j < tblClientes.getColumnCount(); j++) {
-					rowData[j] = tblClientes.getValueAt(i, j);
-				}
-				model.addRow(rowData);
+				// Ajusta os cabeçalhos novamente
+				tblClientes.getColumnModel().getColumn(0).setHeaderValue("ID");
+				tblClientes.getColumnModel().getColumn(1).setHeaderValue("Nome");
+				tblClientes.getColumnModel().getColumn(2).setHeaderValue("Endereço");
+				tblClientes.getColumnModel().getColumn(3).setHeaderValue("Telefone");
+				tblClientes.getColumnModel().getColumn(4).setHeaderValue("E-mail");
+				tblClientes.getTableHeader().repaint();
 			}
-
-			// Define o novo modelo na tabela
-			tblClientes.setModel(model);
-
-			// Ajusta os cabeçalhos novamente
-			tblClientes.getColumnModel().getColumn(0).setHeaderValue("ID");
-			tblClientes.getColumnModel().getColumn(1).setHeaderValue("Nome");
-			tblClientes.getColumnModel().getColumn(2).setHeaderValue("Endereço");
-			tblClientes.getColumnModel().getColumn(3).setHeaderValue("Telefone");
-			tblClientes.getColumnModel().getColumn(4).setHeaderValue("E-mail");
-			tblClientes.getTableHeader().repaint();
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e);
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Erro ao buscar clientes: " + e.getMessage());
 		}
 	}
 
@@ -385,7 +391,7 @@ public class TelaCliente extends JInternalFrame {
 
 			// Executa a atualização
 			int alterado = pst.executeUpdate();
-			System.out.println(alterado);
+//			System.out.println(alterado);
 			if (alterado > 0) {
 				JOptionPane.showMessageDialog(null, "Dados do usuário alterado com sucesso!");
 				limparTela();
@@ -420,7 +426,7 @@ public class TelaCliente extends JInternalFrame {
 			// Recupera o ID do cliente da linha selecionada (supondo que o ID esteja na
 			// coluna 0)
 			String idCliente = tblClientes.getModel().getValueAt(linhaSelecionada, 0).toString();
-			System.out.println(idCliente);
+			// System.out.println(idCliente);
 			String sql = "delete from tbclientes where idcli=?";
 			try {
 				pst = conexao.prepareStatement(sql);
