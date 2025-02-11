@@ -61,6 +61,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.InputStream;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.InternalFrameAdapter;
@@ -674,19 +675,18 @@ public class TelaOs extends JInternalFrame {
 				Map<String, Object> parametros = new HashMap<>();
 				parametros.put("os", Integer.parseInt(textNumeroOs.getText()));
 
-				// Caminho do relatório (verifique se está correto)
-				String caminhoRelatorio = "C:\\dbxrelatorios\\os.jasper";
+				// Obtém o InputStream do relatório dentro do classpath
+	            InputStream relatorio = getClass().getResourceAsStream("/reports/os.jasper");
 
-				// Verificar se o arquivo existe antes de tentar abrir
-				File relatorio = new File(caminhoRelatorio);
-				if (!relatorio.exists()) {
-					JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado!");
-					return;
-				}
+	            // Verificar se o arquivo existe antes de tentar abrir
+	            if (relatorio == null) {
+	                JOptionPane.showMessageDialog(null, "Erro: Arquivo do relatório não encontrado no classpath!");
+	                return;
+	            }
 
-				// Preparar e exibir o relatório
-				JasperPrint print = JasperFillManager.fillReport(caminhoRelatorio, parametros, conexao);
-				JasperViewer.viewReport(print, false);
+	            // Preparar e exibir o relatório
+	            JasperPrint print = JasperFillManager.fillReport(relatorio, parametros, conexao);
+	            JasperViewer.viewReport(print, false);
 
 			} catch (Exception e2) {
 				e2.printStackTrace(); // Exibir erro detalhado no console
