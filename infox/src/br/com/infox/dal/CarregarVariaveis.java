@@ -23,38 +23,28 @@
 
 package br.com.infox.dal;
 
-import java.sql.*;
-import br.com.infox.dal.CarregarVariaveis;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
-/**
- * Conexão com o Banco de Dados
- * 
- * @author Douglas Marcelo Monquero
- * @version 1.1
- */
-
-public class ModuloConexao {
-
-    public static Connection conector() {
-        Connection conexao = null;
-        String driver = "com.mysql.cj.jdbc.Driver";
-        
-     // Carregar as variáveis do arquivo .env antes de conectar ao banco
-        CarregarVariaveis.carregar();
-
-        // Mantendo a URL fixa e pegando usuário e senha das variáveis de ambiente
-        String url = System.getProperty("DB_URL");
-        String user = System.getProperty("DB_USER");
-        String password = System.getProperty("DB_PASSWORD");
-
+class CarregarVariaveis {
+	public static void carregar() {
         try {
-            Class.forName(driver);
-            conexao = DriverManager.getConnection(url, user, password);
-            //System.out.println("Conectado ao banco com sucesso!");
-            return conexao;
-        } catch (ClassNotFoundException | SQLException e) {
+            Properties props = new Properties();
+            FileInputStream file = new FileInputStream(".env");
+            props.load(file);
+            file.close();
+
+            System.setProperty("DB_URL", props.getProperty("DB_URL"));
+            System.setProperty("DB_USER", props.getProperty("DB_USER"));
+            System.setProperty("DB_PASSWORD", props.getProperty("DB_PASSWORD"));
+
+//            System.out.println("DB_URL: " + props.getProperty("DB_URL"));
+//            System.out.println("DB_USER: " + props.getProperty("DB_USER"));
+//            System.out.println("DB_PASSWORD: " + props.getProperty("DB_PASSWORD"));
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            System.out.println("Erro ao carregar o arquivo .env");
         }
     }
 }
