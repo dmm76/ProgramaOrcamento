@@ -60,8 +60,8 @@ public class TelaPrincipal extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			try {
-				TelaPrincipal frame = new TelaPrincipal();
-				frame.setVisible(true);
+				TelaLogin login = new TelaLogin(); // chama o login
+				login.setVisible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

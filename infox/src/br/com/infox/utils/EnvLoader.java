@@ -21,30 +21,25 @@
  *    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package br.com.infox.dal;
+package br.com.infox.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-class CarregarVariaveis {
-	public static void carregar() {
-        try {
-            Properties props = new Properties();
-            FileInputStream file = new FileInputStream("./src/.env");
-            props.load(file);
-            file.close();
+public class EnvLoader {
 
-            System.setProperty("DB_URL", props.getProperty("DB_URL"));
-            System.setProperty("DB_USER", props.getProperty("DB_USER"));
-            System.setProperty("DB_PASSWORD", props.getProperty("DB_PASSWORD"));
+    private static final Properties properties = new Properties();
 
-//            System.out.println("DB_URL: " + props.getProperty("DB_URL"));
-//            System.out.println("DB_USER: " + props.getProperty("DB_USER"));
-//            System.out.println("DB_PASSWORD: " + props.getProperty("DB_PASSWORD"));
+    static {
+        try (FileInputStream fileInputStream = new FileInputStream(".env")) {
+            properties.load(fileInputStream);
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Erro ao carregar o arquivo .env");
+            throw new RuntimeException("Falha ao carregar o arquivo .env", e);
         }
+    }
+
+    public static String get(String key) {
+        return properties.getProperty(key);
     }
 }

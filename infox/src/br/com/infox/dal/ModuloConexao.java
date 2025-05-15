@@ -22,15 +22,21 @@
  */
 
 package br.com.infox.dal;
+import br.com.infox.utils.EnvLoader;
 
-import java.sql.*;
-import br.com.infox.dal.CarregarVariaveis;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 
 /**
- * Conexão com o Banco de Dados
+ * Conexão com o Banco de Dados usando SSL
  * 
  * @author Douglas Marcelo Monquero
- * @version 1.1
+ * @version 1.3
  */
 
 public class ModuloConexao {
@@ -38,21 +44,36 @@ public class ModuloConexao {
     public static Connection conector() {
         Connection conexao = null;
         String driver = "com.mysql.cj.jdbc.Driver";
-        
-     // Carregar as variáveis do arquivo .env antes de conectar ao banco
-        CarregarVariaveis.carregar();
-
-        // Mantendo a URL fixa e pegando usuário e senha das variáveis de ambiente
-        String url = System.getProperty("DB_URL");
-        String user = System.getProperty("DB_USER");
-        String password = System.getProperty("DB_PASSWORD");
 
         try {
+            // Carregar o arquivo 'ca.pem' do classpath (pasta resources)
+            InputStream caInputStream = ModuloConexao.class.getClassLoader().getResourceAsStream("ca.pem");
+
+            if (caInputStream == null) {
+                throw new RuntimeException("Arquivo 'ca.pem' não encontrado no classpath.");
+            }
+
+            // Criar um arquivo temporário para o MySQL Connector usar
+            String tempFilePath = System.getProperty("java.io.tmpdir") + "/ca.pem";
+            Files.copy(caInputStream, Paths.get(tempFilePath), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // Configuração da URL com SSL
+            String url = "jdbc:mysql://monquero.sytes.net:3306/dbinfox?characterEncoding=utf-8" +
+                         "&useSSL=true&requireSSL=true" +
+                         "&verifyServerCertificate=false" +    // Ignora a verificação do CN
+                         "&serverSslCert=" + tempFilePath;     // Define o caminho temporário do CA
+
+            // Usuário e senha do MySQL
+            String user = "dba";
+            String password = "Debase33@dba";
+
             Class.forName(driver);
             conexao = DriverManager.getConnection(url, user, password);
-            //System.out.println("Conectado ao banco com sucesso!");
+            //System.out.println("Conectado ao banco com sucesso usando SSL!");
+
             return conexao;
-        } catch (ClassNotFoundException | SQLException e) {
+
+        } catch (ClassNotFoundException | SQLException | java.io.IOException e) {
             e.printStackTrace();
             return null;
         }
