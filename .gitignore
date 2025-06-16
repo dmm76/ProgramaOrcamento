@@ -87,4 +87,5 @@ nb-configuration.xml
 ##############################
 ## Miscellaneous
 ##############################
-*.log
+*.log.env
+/infox/.env
